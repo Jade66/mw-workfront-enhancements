@@ -32,6 +32,24 @@
     return undefined;
   };
   
+  var setupMutationObserver = function(storyBox) {
+    if(storyBox.hasMutationObserver) {
+      return;
+    }
+    
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if(mutation.removedNodes.length > 0) {
+          setTimeout(function(){
+            loadParentTask(storyBox);
+          }, 500);
+        }
+      });
+    });
+    observer.observe(storyBox, { attributes: true, childList: true, characterData: true });
+    storyBox.hasMutationObserver = true;
+  };
+  
   var addParentToStoryBox = function(storyBox, parentTask) {
     var parentTaskDiv = document.createElement('div');
     parentTaskDiv.classList.add('jg-parent-task');
@@ -47,6 +65,7 @@
       parentTaskDiv.innerHTML = '<a href="' + getTaskBrowserUrl(parentTask.ID) + '">-&gt;' +  displayName + '</a>';
     }
     storyBox.appendChild(parentTaskDiv);
+    setupMutationObserver(storyBox);
   };
   
   var loadParentTask = function(storyBoxNode) {
