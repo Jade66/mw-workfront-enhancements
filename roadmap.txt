@@ -1,0 +1,3 @@
+Bug fixes needed:
+	When you change the color of a task in the story board, the parent information is lost.  Workfront is probably re-loading the story, so I may have to add a MutationObserver.
+		https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver

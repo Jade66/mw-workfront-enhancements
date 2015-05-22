@@ -1,0 +1,13 @@
+{
+  "manifest_version": 2,
+  "name": "MW Workfront Enhancements",
+  "version": "1.2.0",
+  "description": "Enhancements to Workfront useful in MathWorks",
+  "content_scripts": [
+    {
+      "matches": ["https://mathworks.attask-ondemand.com/*"],
+      "css": ["styles.css"],
+      "js": ["main.js"]
+    }
+  ]
+}
