@@ -2,18 +2,17 @@
   var taskCache = {};
   
   var getTaskApiUrl = function(taskId) {
-    return "https://mathworks.attask-ondemand.com/attask/api/task/" + taskId + "?fields=parentID";
+    return "/attask/api/task/" + taskId + "?fields=parentID";
   };
   
   var getTaskBrowserUrl = function(taskId) {
-    return "https://mathworks.attask-ondemand.com/task/view?ID=" + taskId;
+    return "/task/view?ID=" + taskId;
   };
   
-  var getTask = function(taskId, callback) {
+  var getTask = function(taskId) {
     var task = taskCache[taskId];
     if(!task) {
       var xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = callback;
       xhr.open("get", getTaskApiUrl(taskId), false);
       xhr.send();
       var responseObject = JSON.parse(xhr.responseText);
