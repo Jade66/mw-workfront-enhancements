@@ -2,3 +2,8 @@
   padding-top: 20px;
   padding-bottom: 20px;
 }
+
+.jg-related-task {
+  box-shadow: 0 0 1em red;
+}
+

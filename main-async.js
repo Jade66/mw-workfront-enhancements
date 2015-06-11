@@ -9,6 +9,8 @@
     return "/task/view?ID=" + taskId;
   };
   
+  
+  
   var getTask = function(taskId) {
     var task = taskCache[taskId];
     if(!task) {
@@ -30,6 +32,9 @@
     }
     return undefined;
   };
+  
+  
+  
   
   var setupMutationObserver = function(storyBox) {
     if(storyBox.hasMutationObserver) {
@@ -69,8 +74,11 @@
   
   var loadParentTask = function(storyBoxNode) {
     var taskId = storyBoxNode.getAttribute('data-objid');
-    var parentTask = getParentTask(taskId);
-    addParentToStoryBox(storyBoxNode, parentTask);
+    var addParentLink = addParentToStoryBox.bind(undefined, storyBoxNode);
+    //Promises time!
+    getParentTaskId(taskId) //getParentTask has to return a promise
+      .then(getTask) //getTask has to return a promise
+      .then(addParentLink);
   };
   
   var loadParentTasks = function(storyBoxNodes) {
@@ -82,11 +90,5 @@
   setTimeout(function(){
     var taskBoxes = document.querySelectorAll('div.story');
     loadParentTasks(taskBoxes);
-  }, 2000);
-  
-  window.MwWorkfront = {
-    getTask : getTask,
-    getParentTask : getParentTask
-  };
-  
+  }, 1000);
 })();
