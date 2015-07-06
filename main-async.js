@@ -1,94 +1,31 @@
 (function(){
-  var taskCache = {};
-  
-  var getTaskApiUrl = function(taskId) {
-    return "/attask/api/task/" + taskId + "?fields=parentID";
-  };
-  
-  var getTaskBrowserUrl = function(taskId) {
-    return "/task/view?ID=" + taskId;
-  };
   
   
-  
-  var getTask = function(taskId) {
-    var task = taskCache[taskId];
-    if(!task) {
-      var xhr = new XMLHttpRequest();
-      xhr.open("get", getTaskApiUrl(taskId), false);
-      xhr.send();
-      var responseObject = JSON.parse(xhr.responseText);
-      task = responseObject.data;
-      taskCache[taskId] = task;
-    }
-    return task;
-  };
-  
-  var getParentTask = function(taskId) {
-    var task = getTask(taskId);
-    var parentId = task.parentID;
-    if(parentId) {
-      return getTask(parentId);
-    }
-    return undefined;
-  };
-  
-  
-  
-  
-  var setupMutationObserver = function(storyBox) {
-    if(storyBox.hasMutationObserver) {
-      return;
-    }
-    
-    var observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        if(mutation.removedNodes.length > 0) {
-          setTimeout(function(){
-            loadParentTask(storyBox);
-          }, 500);
+  var storyBoxInsertObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      var listLength = mutation.addedNodes.length;
+      for(var i = 0; i < listLength; i++) {
+        var addedNode = mutation.addedNodes[i];
+        if(addedNode.classList.contains('story')) {
+          window.MwWorkfront.loadParentTask(addedNode);
         }
-      });
-    });
-    observer.observe(storyBox, { attributes: true, childList: true, characterData: true });
-    storyBox.hasMutationObserver = true;
-  };
-  
-  var addParentToStoryBox = function(storyBox, parentTask) {
-    var parentTaskDiv = document.createElement('div');
-    parentTaskDiv.classList.add('jg-parent-task');
-    parentTaskDiv.classList.add('ellipsed-text');
-    if(parentTask) {
-      parentTaskDiv.id = "parent-div-" + parentTask.ID;
-      parentTaskDiv.setAttribute('data-objid', parentTask.ID);
-      parentTaskDiv.title = parentTask.name;
-      var displayName = parentTask.name;
-      if(displayName.length >= 32) {
-        displayName = displayName.substring(0, 30) + '...';
       }
-      parentTaskDiv.innerHTML = '<a href="' + getTaskBrowserUrl(parentTask.ID) + '">-&gt;' +  displayName + '</a>';
-    }
-    storyBox.appendChild(parentTaskDiv);
-    setupMutationObserver(storyBox);
-  };
-  
-  var loadParentTask = function(storyBoxNode) {
-    var taskId = storyBoxNode.getAttribute('data-objid');
-    var addParentLink = addParentToStoryBox.bind(undefined, storyBoxNode);
-    //Promises time!
-    getParentTaskId(taskId) //getParentTask has to return a promise
-      .then(getTask) //getTask has to return a promise
-      .then(addParentLink);
-  };
-  
-  var loadParentTasks = function(storyBoxNodes) {
-    [].forEach.call(storyBoxNodes, function(it){
-      loadParentTask(it);
     });
-  };
+  });
+//  storyBoxInsertObserver.observe(document.querySelector('body'),  { attributes: true, childList: true, characterData: true });
+  
+  var containerInsertObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      var listLength = mutation.addedNodes.length;
+      for(var i = 0; i < listLength; i++) {
+        var addedNode = mutation.addedNodes[i];
+        if(addedNode.tagName === 'DIV') {
+          addedNode.style.border = '5px solid red';
+        }
+      }
+    });
+  });
+  containerInsertObserver.observe(document.querySelector('body'),  { attributes: true, childList: true, characterData: true });
 
-  setTimeout(function(){
-    var taskBoxes = document.querySelectorAll('div.story');
-    loadParentTasks(taskBoxes);
-  }, 1000);
+  
 })();

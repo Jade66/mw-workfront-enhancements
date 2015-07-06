@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "MW Workfront Enhancements",
-  "version": "1.4.0",
+  "version": "1.5.2",
   "description": "Enhancements to Workfront useful for agile teams",
   "content_scripts": [
     {

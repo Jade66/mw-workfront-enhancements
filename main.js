@@ -78,15 +78,38 @@
       loadParentTask(it);
     });
   };
-
+  
+  var hanldeBurndownTabClick = function(event) {
+    if(event.altKey) {
+      var burnDownContainer = document.getElementsByClassName('cc-box')[0];
+      if(burnDownContainer) {
+        if(getComputedStyle(burnDownContainer).display === "none") {
+          burnDownContainer.style.display = "block";
+        } else {
+          burnDownContainer.style.display = "none";
+        }
+      }
+    }
+  };
+  
+  var addBurndownHide = function(tabId){
+    var el = document.getElementById(tabId);
+    if(el) {
+      el.addEventListener('click', hanldeBurndownTabClick);
+    }
+  };
+  
   setTimeout(function(){
     var taskBoxes = document.querySelectorAll('div.story');
+    addBurndownHide('tab-tab-iteration-storyboard');
+    addBurndownHide('tab-content-team-iterations');
     loadParentTasks(taskBoxes);
   }, 2000);
   
   window.MwWorkfront = {
     getTask : getTask,
-    getParentTask : getParentTask
+    getParentTask : getParentTask,
+    loadParentTask : loadParentTask
   };
   
 })();
