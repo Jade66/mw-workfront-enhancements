@@ -8,29 +8,7 @@
   var getTaskBrowserUrl = function(taskId) {
     return "/task/view?ID=" + taskId;
   };
-  
-  var getTask = function(taskId) {
-    var task = taskCache[taskId];
-    if(!task) {
-      var xhr = new XMLHttpRequest();
-      xhr.open("get", getTaskApiUrl(taskId), false);
-      xhr.send();
-      var responseObject = JSON.parse(xhr.responseText);
-      task = responseObject.data;
-      taskCache[taskId] = task;
-    }
-    return task;
-  };
-  
-  var getParentTask = function(taskId) {
-    var task = getTask(taskId);
-    var parentId = task.parentID;
-    if(parentId) {
-      return getTask(parentId);
-    }
-    return undefined;
-  };
-  
+
   var setupMutationObserver = function(storyBox) {
     if(storyBox.hasMutationObserver) {
       return;
@@ -66,11 +44,40 @@
     storyBox.appendChild(parentTaskDiv);
     setupMutationObserver(storyBox);
   };
+
+  var getTaskAsync = function(taskId, callback) {
+    var task = taskCache[taskId];
+    if(task) {
+      callback(null, task);
+    } else {
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function(){callback(xhr);};
+      xhr.open("get", getTaskApiUrl(taskId));
+      xhr.send();
+    }
+  };
+  
+  var getParentTaskAsync = function(taskId, storyBoxNode) {
+    var callback = function(xhr, parentTask) {
+      if(!parentTask) {
+        if(4 != xhr.readyState) {
+          return;
+        }
+        if(200 != xhr.status) {
+          throw "Ajax to get parent task failed with code " + xhr.status;
+        }
+        var responseObject = JSON.parse(xhr.responseText);
+        parentTask = responseObject.data;
+      }
+      addParentToStoryBox(storyBoxNode, parentTask);
+      taskCache[taskId] = parentTask;
+    };
+    getTaskAsync(taskId, callback);
+  };
   
   var loadParentTask = function(storyBoxNode) {
     var taskId = storyBoxNode.getAttribute('data-objid');
-    var parentTask = getParentTask(taskId);
-    addParentToStoryBox(storyBoxNode, parentTask);
+    getParentTaskAsync(taskId, storyBoxNode);
   };
   
   var loadParentTasks = function(storyBoxNodes) {
@@ -107,8 +114,8 @@
   }, 2000);
   
   window.MwWorkfront = {
-    getTask : getTask,
-    getParentTask : getParentTask,
+    getTask : getTaskAsync,
+    getParentTask : getParentTaskAsync,
     loadParentTask : loadParentTask
   };
   
