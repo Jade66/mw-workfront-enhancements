@@ -58,19 +58,37 @@
   };
   
   var getParentTaskAsync = function(taskId, storyBoxNode) {
-    var callback = function(xhr, parentTask) {
-      if(!parentTask) {
+    var callback = function(xhr, task) {
+      if(!task) {
         if(4 != xhr.readyState) {
           return;
         }
         if(200 != xhr.status) {
-          throw "Ajax to get parent task failed with code " + xhr.status;
+          throw "Ajax to get task object failed with code " + xhr.status;
         }
         var responseObject = JSON.parse(xhr.responseText);
-        parentTask = responseObject.data;
+        task = responseObject.data;
       }
-      addParentToStoryBox(storyBoxNode, parentTask);
-      taskCache[taskId] = parentTask;
+      if(!task.parentID) {
+        return;
+      }
+      //Ok, now we have the task and it has a parent. Get the parent task and add it to the story box.
+      var parentCallback = function(xhr, parentTask) {
+        if(!parentTask) {
+          if(4 != xhr.readyState) {
+            return;
+          }
+          if(200 != xhr.status) {
+            throw "Ajax to get parent task failed with code " + xhr.status;
+          }
+          var responseObject = JSON.parse(xhr.responseText);
+          parentTask = responseObject.data;
+        }
+        //And now we have the parent task.  Do it up.
+        addParentToStoryBox(storyBoxNode, parentTask);
+        taskCache[parentTask.ID] = parentTask;
+      };
+      getTaskAsync(task.parentID, parentCallback);
     };
     getTaskAsync(taskId, callback);
   };
