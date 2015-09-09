@@ -3,7 +3,26 @@
   padding-bottom: 20px;
 }
 
-.jg-related-task {
+.jg-related-task-0 {
   box-shadow: 0 0 1em red;
 }
 
+.jg-related-task-1 {
+  box-shadow: 0 0 1em blue;
+}
+
+.jg-related-task-2 {
+  box-shadow: 0 0 1em green;
+}
+
+.jg-related-task-3 {
+  box-shadow: 0 0 1em yellow;
+}
+
+.jg-related-task-4 {
+  box-shadow: 0 0 1em purple;
+}
+
+.jg-related-task-5 {
+  box-shadow: 0 0 1em black;
+}
