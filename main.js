@@ -1,10 +1,10 @@
 (function(){
   var taskCache = {};
-  
+
   var getTaskApiUrl = function(taskId) {
     return "/attask/api/task/" + taskId + "?fields=parentID";
   };
-  
+
   var getTaskBrowserUrl = function(taskId) {
     return "/task/view?ID=" + taskId;
   };
@@ -13,7 +13,7 @@
     if(storyBox.hasMutationObserver) {
       return;
     }
-    
+
     var observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
         if(mutation.removedNodes.length > 0) {
@@ -26,7 +26,7 @@
     observer.observe(storyBox, { attributes: true, childList: true, characterData: true });
     storyBox.hasMutationObserver = true;
   };
-  
+
   var addParentToStoryBox = function(storyBox, parentTask) {
     var parentTaskDiv = document.createElement('div');
     parentTaskDiv.classList.add('jg-parent-task');
@@ -56,7 +56,7 @@
       xhr.send();
     }
   };
-  
+
   var getParentTaskAsync = function(taskId, storyBoxNode) {
     var callback = function(xhr, task) {
       if(!task) {
@@ -92,49 +92,47 @@
     };
     getTaskAsync(taskId, callback);
   };
-  
+
   var loadParentTask = function(storyBoxNode) {
     var taskId = storyBoxNode.getAttribute('data-objid');
     getParentTaskAsync(taskId, storyBoxNode);
   };
-  
+
   var loadParentTasks = function(storyBoxNodes) {
     [].forEach.call(storyBoxNodes, function(it){
       loadParentTask(it);
     });
   };
-  
+
   var hanldeBurndownTabClick = function(event) {
-    if(event.altKey) {
-      var burnDownContainer = document.getElementsByClassName('cc-box')[0];
-      if(burnDownContainer) {
-        if(getComputedStyle(burnDownContainer).display === "none") {
-          burnDownContainer.style.display = "block";
-        } else {
-          burnDownContainer.style.display = "none";
-        }
+    var burnDownContainer = document.getElementsByClassName('cc-box')[0];
+    if(burnDownContainer) {
+      if(getComputedStyle(burnDownContainer).display === "none") {
+        burnDownContainer.style.display = "block";
+      } else {
+        burnDownContainer.style.display = "none";
       }
     }
   };
-  
+
   var addBurndownHide = function(tabId){
     var el = document.getElementById(tabId);
     if(el) {
-      el.addEventListener('click', hanldeBurndownTabClick);
+      el.addEventListener('dblclick', hanldeBurndownTabClick);
     }
   };
-  
+
   setTimeout(function(){
     var taskBoxes = document.querySelectorAll('div.story');
     addBurndownHide('tab-tab-iteration-storyboard');
     addBurndownHide('tab-content-team-iterations');
     loadParentTasks(taskBoxes);
   }, 2000);
-  
+
   window.MwWorkfront = {
     getTask : getTaskAsync,
     getParentTask : getParentTaskAsync,
     loadParentTask : loadParentTask
   };
-  
+
 })();

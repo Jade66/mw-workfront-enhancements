@@ -44,13 +44,11 @@
   setTimeout(function(){
     var storyBoxNodes = document.querySelectorAll('div.story');
     [].forEach.call(storyBoxNodes, function(it){
-      it.addEventListener('click', function(event) {
-        if(event.altKey) {
-          var parentLink = it.querySelector('.' + PARENT_TASK_CLASS);
-          if(parentLink) {
-            var parentTaskId = parentLink.getAttribute('data-objid');
-            flagRelatedStories(parentTaskId);
-          }
+      it.addEventListener('dblclick', function(event) {
+        var parentLink = it.querySelector('.' + PARENT_TASK_CLASS);
+        if(parentLink) {
+          var parentTaskId = parentLink.getAttribute('data-objid');
+          flagRelatedStories(parentTaskId);
         }
       });
     });
