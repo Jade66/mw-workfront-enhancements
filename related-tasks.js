@@ -41,26 +41,26 @@
     });
   };
 
-var loaded = false;
-
-var intervalId =  setInterval(function(){
-  if(loaded) {
-    clearInterval(intervalId);
-    return;
-  }
-  var storyBoxNodes = document.querySelectorAll('div.story');
-  if(storyBoxNodes.length > 0) {
-    loaded = true;
-    [].forEach.call(storyBoxNodes, function(it){
-      it.addEventListener('dblclick', function(event) {
-        var parentLink = it.querySelector('.' + PARENT_TASK_CLASS);
-        if(parentLink) {
-          var parentTaskId = parentLink.getAttribute('data-objid');
-          flagRelatedStories(parentTaskId);
-        }
+  var loaded = false;
+  
+  var intervalId =  setInterval(function(){
+    if(loaded) {
+      clearInterval(intervalId);
+      return;
+    }
+    var storyBoxNodes = document.querySelectorAll('div.story');
+    if(storyBoxNodes.length > 0) {
+      loaded = true;
+      [].forEach.call(storyBoxNodes, function(it){
+        it.addEventListener('dblclick', function(event) {
+          var parentLink = it.querySelector('.' + PARENT_TASK_CLASS);
+          if(parentLink) {
+            var parentTaskId = parentLink.getAttribute('data-objid');
+            flagRelatedStories(parentTaskId);
+          }
+        });
       });
-    });
-  }
-}, 2000);
+    }
+  }, 2000);
 
 })();

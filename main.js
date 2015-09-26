@@ -109,25 +109,42 @@
     if(burnDownContainer) {
       if(getComputedStyle(burnDownContainer).display === "none") {
         burnDownContainer.style.display = "block";
+        localStorage.removeItem(BURNDOWN_HIDE_PROPERTY);
       } else {
         burnDownContainer.style.display = "none";
+        localStorage.setItem(BURNDOWN_HIDE_PROPERTY, 'true');
       }
     }
   };
+  
+  var BURNDOWN_HIDE_PROPERTY = 'hideBurnDownChart';
 
   var addBurndownHide = function(tabId){
     var el = document.getElementById(tabId);
     if(el) {
       el.addEventListener('dblclick', hanldeBurndownTabClick);
+      if(localStorage.getItem(BURNDOWN_HIDE_PROPERTY)) {
+        hanldeBurndownTabClick();
+      }
     }
   };
-
-  setTimeout(function(){
-    var taskBoxes = document.querySelectorAll('div.story');
-    addBurndownHide('tab-tab-iteration-storyboard');
-    addBurndownHide('tab-content-team-iterations');
-    loadParentTasks(taskBoxes);
+  
+  var loaded = false;
+  
+  var intervalId =  setInterval(function(){
+    if(loaded) {
+      clearInterval(intervalId);
+      return;
+    }
+    var storyBoxNodes = document.querySelectorAll('div.story');
+    if(storyBoxNodes.length > 0) {
+      loaded = true;
+      addBurndownHide('tab-tab-iteration-storyboard');
+      addBurndownHide('tab-content-team-iterations');
+      loadParentTasks(storyBoxNodes);
+    }
   }, 2000);
+  
 
   window.MwWorkfront = {
     getTask : getTaskAsync,
